@@ -95,6 +95,7 @@ def main():
 
         if int(elapsed_time) // 5 > l:
             l=l+1
+            #rijngr
             draw(l, elapsed_time)
 
         WIN.fill((121, 168, 157))
