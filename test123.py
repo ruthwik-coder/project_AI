@@ -13,16 +13,22 @@ WIDTH, HEIGHT = 1024,512
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Dodge")
 # Creates a list containing 5 lists, each of 8 items, all set to 0
-w, h = 64,128
-Matrix = [[0 for x in range(w)] for y in range(h)]
+w, h =128,64
+Matrix = [[1 for x in range(w)] for y in range(h)]
 Matrix[88][32]=2
 Matrix[89][32]=2
 Matrix[88][33]=2
 Matrix[89][33]=2
 m_c=0
-path0= [[0 for p123 in range(w)] for q123 in range(h)]
-po=path0[m_c]
+# //path0= [[0 for p123 in range(w)] for q123 in range(h)]
+# //po=path0[m_c]
+path0= [[1 for p123 in range(w)] for q123 in range(h)]
+src=[0,0]
+dest=[88,32]
+mflag=True
+l=0
 clicked=False
+pathu=[]
 checkboxes = [
         checkbox.ui_Checkbox(WIN, 50, 50,1, caption="monsters"),
     checkbox.ui_Checkbox(WIN, 50, 100, 2, caption="walls"  ),#, isChecked=True)
@@ -37,8 +43,13 @@ def draw(l,elapsed_time):
     text_surface =font.render(f"Level: {l}", False, "pink")
     WIN.blit(text_surface, (50, 50))
 def drawpath():
-    src=
-    astar.haha(Matrix,src,dest)
+
+    pathu=astar.haha(Matrix,src,dest)
+    if mflag == False:
+        for lp in pathu:
+            BG = pygame.transform.scale(pygame.image.load("images/monster1.png"), (8, 8))
+            pygame.time.delay(1000)
+            WIN.blit(BG, lp * 8)
     print("lol")
 
 
@@ -76,7 +87,9 @@ def main():
                  x,y=pygame.mouse.get_pos()
                  #print(x,y)
                  u,m=int(math.floor(x / 8.0)) ,int(math.floor(y / 8.0))
-                 Matrix[u][m]=1
+                 print(u,m)
+                 Matrix[u][m]=0
+                 path0[u][m]=0
                  p,q=int(math.floor(x / 8.0)) * 8,int(math.floor(y / 8.0)) * 8
 
                 if  clicked==True and checkbox2.idnum == 1 and checkbox2.checked:
@@ -84,33 +97,34 @@ def main():
                     print("454")
                     # print(x,y)
                     u, m = int(math.floor(x / 8.0)), int(math.floor(y / 8.0))
-                    Matrix[u][m] = -1
-                    po[m_c].path0[u][m]=1
+                    #Matrix[u][m] = -1
+                    src=[u,m]
 
 
                     p, q = int(math.floor(x / 8.0)) * 8, int(math.floor(y / 8.0)) * 8
                 if clicked==True and checkbox2.idnum == 3 and checkbox2.checked:
-
+                    mflag=False
                     drawpath()
 
-        if int(elapsed_time) // 5 > l:
+        if int(elapsed_time) // 10 > l:
             l=l+1
             #rijngr
             draw(l, elapsed_time)
 
         WIN.fill((121, 168, 157))
-        for i in range(0,128):
-         for j in range(0,64):
-                if Matrix[i][j] == -1:
+        for i in range(h):
+         for j in range(w):
+                if Matrix[i][j] == -1  :
                     m_c=m_c+1
                     BG = pygame.transform.scale(pygame.image.load("images/monster1.png"), (8, 8))
                     WIN.blit(BG, (i * 8, j * 8))
-                elif Matrix[i][j] == 1:
+                elif Matrix[i][j] == 0 :
                     BG = pygame.transform.scale(pygame.image.load("images/pixilart-drawing.png"), (8, 8))
                     WIN.blit(BG, (i * 8, j * 8))
-                elif Matrix[i][j] == 2:
+                elif Matrix[i][j] == 2  :
                     BG=pygame.transform.scale(pygame.image.load("images/house.png"), (16, 16))
                     WIN.blit(BG, (704,256))
+
 
                 else:
                     pygame.draw.rect(WIN, (121,168,157), (i * 8, j * 8, 8, 8))
