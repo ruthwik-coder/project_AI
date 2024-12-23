@@ -26,6 +26,7 @@ pygame.display.set_caption("Space Dodge")
 PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
 l = 1
+player_img = pygame.transform.scale(pygame.image.load("images/hero.png"), (16, 16))
 PLAYER_VEL = 10
 STAR_WIDTH = 10
 STAR_HEIGHT = 20
@@ -105,6 +106,7 @@ grid = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
+
 # checkboxes = [
 #         checkbox.ui_Checkbox(WIN, 50, 50,1, caption="monsters"),
 #     checkbox.ui_Checkbox(WIN, 50, 100, 2, caption="walls"  ),#, isChecked=True)
@@ -121,6 +123,7 @@ def draw(l, elapsed_time, player,monster):
     WIN.blit(text_surface, (50, 50))
 
     pygame.draw.rect(WIN, "blue", player)
+    WIN.blit(player_img, player)
     # pygame.draw.rect(WIN, "green",monster)
 
     # pygame.draw.rect(WIN, "pink",monster3)
@@ -146,10 +149,13 @@ def main():
     monsters = [
         pygame.Rect(16, 19, 16, 16),  # First monster
         pygame.Rect(63 * 16, 19, 16, 16),  # Second monster starts from right
-        pygame.Rect(1 * 16, 31 * 16, 16, 16)  # Third monster starts from top
+        pygame.Rect(61 * 16, 19 , 16, 16)  # Third monster starts from top
     ]
     monster_colors = ["white", "red", "green"]
+    monster_image = pygame.transform.scale(pygame.image.load("images/monster1.png"), (16, 16))
 
+    monster_image2 = pygame.transform.scale(pygame.image.load("images/monster3.png"), (16, 16))
+    monster_image3 = pygame.transform.scale(pygame.image.load("images/monster6.png"), (16, 16))
     # Different colors for each monster
 
     run = True
@@ -220,6 +226,9 @@ def main():
         pygame.draw.rect(WIN, "blue", player)
         for monster, color in zip(monsters, monster_colors):
             pygame.draw.rect(WIN, color, monster)
+        WIN.blit(monster_image, monsters[0])
+        WIN.blit(monster_image2, monsters[1])
+        WIN.blit(monster_image3, monsters[2])
         draw(0, elapsed_time, player, monsters[0])  # Using first monster for compatibility with draw function
 
         pygame.display.update()
