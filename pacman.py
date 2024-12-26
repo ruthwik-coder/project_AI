@@ -163,7 +163,7 @@ def main():
     start_time = time.time()
     elapsed_time = 0
     monster_move_delay = 0
-    MONSTER_MOVE_INTERVAL = 15
+    MONSTER_MOVE_INTERVAL = 5
 
     while run:
         clock.tick(60)
