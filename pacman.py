@@ -1,6 +1,8 @@
 import math
 from random import randint
 
+from PIL.ImageEnhance import Color
+
 import checkbox
 import pygame
 import time
@@ -25,9 +27,9 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Dodge")
 PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
-l = 1
+l = 0
 player_img = pygame.transform.scale(pygame.image.load("images/hero.png"), (16, 16))
-PLAYER_VEL = 10
+PLAYER_VEL = 100
 STAR_WIDTH = 10
 STAR_HEIGHT = 20
 STAR_VEL = 3
@@ -107,13 +109,6 @@ grid = [
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
 
-# checkboxes = [
-#         checkbox.ui_Checkbox(WIN, 50, 50,1, caption="monsters"),
-#     checkbox.ui_Checkbox(WIN, 50, 100, 2, caption="walls"  ),#, isChecked=True)
-# checkbox.ui_Checkbox(WIN, 50, 150, 3, caption="DONE^_^"  )#, isChecked=True)
-#
-#     ]
-# def draw(l,elapsed_time,player,monster,monster2,monster3):
 def draw(l, elapsed_time, player,monster):
     font = pygame.font.SysFont("comicsans", 30)
     time_text = font.render(f"Time: {round(elapsed_time)}s", 1, "white")
@@ -124,9 +119,6 @@ def draw(l, elapsed_time, player,monster):
 
     pygame.draw.rect(WIN, "blue", player)
     WIN.blit(player_img, player)
-    # pygame.draw.rect(WIN, "green",monster)
-
-    # pygame.draw.rect(WIN, "pink",monster3)
 
 def can_move(grid, x, y):
     """
@@ -145,13 +137,20 @@ def can_move(grid, x, y):
 
 
 def main():
+    global l
     player = pygame.Rect(24 * 16, 19 * 16, 16, 16)
     monsters = [
         pygame.Rect(16, 19, 16, 16),  # First monster
         pygame.Rect(63 * 16, 19, 16, 16),  # Second monster starts from right
         pygame.Rect(61 * 16, 19 , 16, 16)  # Third monster starts from top
     ]
+    rew = [
+        pygame.Rect(5*16,11*16, 16, 16),
+        pygame.Rect(57 * 16, 16*16, 16, 16),
+        pygame.Rect(59 * 16,14*16, 16, 16)
+    ]
     monster_colors = ["white", "red", "green"]
+    rew_c = ["blue", "blue", "blue"]
     monster_image = pygame.transform.scale(pygame.image.load("images/monster1.png"), (16, 16))
 
     monster_image2 = pygame.transform.scale(pygame.image.load("images/monster3.png"), (16, 16))
@@ -163,8 +162,9 @@ def main():
     start_time = time.time()
     elapsed_time = 0
     monster_move_delay = 0
-    MONSTER_MOVE_INTERVAL = 5
-
+    MONSTER_MOVE_INTERVAL = 60
+    collected_rewards = [False, False, False]
+    bg_color = (121, 168, 157)
     while run:
         clock.tick(60)
         elapsed_time = time.time() - start_time
@@ -174,7 +174,7 @@ def main():
                 run = False
                 break
 
-        WIN.fill((121, 168, 157))
+        WIN.fill(bg_color)
 
         # Draw walls
         for i in range(grid_height):
@@ -221,15 +221,27 @@ def main():
                 run = False
                 print("Game Over!")
                 break
+        for k, reward in enumerate(rew):
+            if player.colliderect(reward) and not collected_rewards[k]:
+                collected_rewards[k] = True
+                rew_c[k] = bg_color
+                l += 1
+                print(f"Collected reward {k + 1}, Level is now {l}")
+
+        if l >= 3:
+            run = False
+            print("You won!")
 
         # Draw everything
         pygame.draw.rect(WIN, "blue", player)
         for monster, color in zip(monsters, monster_colors):
             pygame.draw.rect(WIN, color, monster)
+        for rews, color in zip(rew,rew_c):
+            pygame.draw.rect(WIN, color,rews)
         WIN.blit(monster_image, monsters[0])
         WIN.blit(monster_image2, monsters[1])
         WIN.blit(monster_image3, monsters[2])
-        draw(0, elapsed_time, player, monsters[0])  # Using first monster for compatibility with draw function
+        draw(l, elapsed_time, player, monsters[0])  # Using first monster for compatibility with draw function
 
         pygame.display.update()
 
